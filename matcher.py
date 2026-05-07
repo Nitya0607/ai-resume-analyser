@@ -1,3 +1,5 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 from resume_parser import extract_entities
 
 def calculate_match_score(resume_text, job_description):
@@ -10,12 +12,19 @@ def calculate_match_score(resume_text, job_description):
     jd_skills = set([s.lower() for s in jd_entities['skills']])
     resume_skills = set([s.lower() for s in resume_entities['skills']])
     
+    vectorizer = TfidfVectorizer(stop_words='english')
+    vectors = vectorizer.fit_transform([resume_text, job_description])
+    semantic_similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
+    semantic_score = semantic_similarity * 100
+    
     if not jd_skills:
-        score = 100.0 if resume_skills else 0.0
-        return score, [], ["No specific technical skills were identified in the job description."]
+        score = round(semantic_score, 2)
+        return score, [], ["No specific technical skills identified. Score based purely on semantic text matching."]
         
     matched_skills = jd_skills.intersection(resume_skills)
-    score = round((len(matched_skills) / len(jd_skills)) * 100, 2)
+    exact_score = (len(matched_skills) / len(jd_skills)) * 100
+    
+    final_score = round((exact_score * 0.70) + (semantic_score * 0.30), 2)
     
     missing_skills = list(jd_skills - resume_skills)
     
@@ -31,9 +40,9 @@ def calculate_match_score(resume_text, job_description):
     else:
         suggestions.append("Outstanding! Your skills align perfectly with all identified requirements in the job description.")
         
-    if score < 50:
+    if final_score < 50:
         suggestions.append("Your exact keyword match is quite low. Try tailoring your terminology to directly mirror the phrases used in the job description.")
-    elif score > 80:
+    elif final_score > 80:
         suggestions.append("High match detected. Focus on describing the business impact of these skills rather than just listing them.")
         
-    return score, missing_skills, suggestions
+    return final_score, missing_skills, suggestions
