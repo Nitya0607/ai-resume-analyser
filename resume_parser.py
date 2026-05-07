@@ -10,6 +10,13 @@ except OSError:
     os.system('python -m spacy download en_core_web_sm')
     nlp = spacy.load('en_core_web_sm')
 
+custom_nlp = None
+if os.path.exists("custom_skill_ner"):
+    try:
+        custom_nlp = spacy.load("custom_skill_ner")
+    except Exception:
+        pass
+
 def extract_text_from_pdf(file_path):
     text = ""
     try:
@@ -81,6 +88,14 @@ def extract_entities(text):
         pattern = r'(?<!\w)' + re.escape(skill) + r'(?!\w)'
         if re.search(pattern, text_lower) or re.search(pattern, text_normalized):
             entities['skills'].append(skill.title())
+            
+    if custom_nlp:
+        custom_doc = custom_nlp(text)
+        for ent in custom_doc.ents:
+            if ent.label_ == "SKILL":
+                skill_name = ent.text.title()
+                if skill_name not in entities['skills']:
+                    entities['skills'].append(skill_name)
             
     for ent in doc.ents:
         if ent.label_ in ['ORG', 'DATE']:
