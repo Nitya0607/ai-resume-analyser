@@ -76,9 +76,10 @@ def extract_entities(text):
     ]
     
     text_lower = text.lower()
+    text_normalized = re.sub(r'[\-\/\_]', ' ', text_lower)
     for skill in skill_keywords:
         pattern = r'(?<!\w)' + re.escape(skill) + r'(?!\w)'
-        if re.search(pattern, text_lower):
+        if re.search(pattern, text_lower) or re.search(pattern, text_normalized):
             entities['skills'].append(skill.title())
             
     for ent in doc.ents:
