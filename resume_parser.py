@@ -50,12 +50,35 @@ def extract_entities(text):
         "nosql", "react", "angular", "vue", "node.js", "django", "flask", "spring", "aws", 
         "azure", "gcp", "docker", "kubernetes", "git", "machine learning", "deep learning", 
         "nlp", "data analysis", "pandas", "numpy", "scikit-learn", "tensorflow", "pytorch",
-        "agile", "scrum", "leadership", "communication", "project management", "rest api", "graphql"
+        "agile", "scrum", "leadership", "communication", "project management", "rest api", "graphql",
+        "typescript", "swift", "kotlin", "go", "rust", "r", "matlab", "scala", "perl", "bash",
+        "linux", "unix", "windows", "macos", "android", "ios", "react native", "flutter", "dart",
+        "express.js", "next.js", "nuxt.js", "svelte", "jquery", "bootstrap", "tailwind css", "sass",
+        "less", "webpack", "babel", "vite", "graphql", "apollo", "mongodb", "postgresql", "mysql",
+        "sqlite", "oracle", "sql server", "redis", "memcached", "cassandra", "elasticsearch", "firebase",
+        "supabase", "rabbitmq", "kafka", "celery", "nginx", "apache", "jenkins", "gitlab ci", "github actions",
+        "travis ci", "circleci", "terraform", "ansible", "chef", "puppet", "promethues", "grafana",
+        "elk stack", "splunk", "datadog", "new relic", "jira", "confluence", "trello", "asana",
+        "figma", "sketch", "adobe xd", "photoshop", "illustrator", "invision", "zeplin", "wireframing",
+        "prototyping", "user research", "usability testing", "a/b testing", "google analytics", "seo",
+        "sem", "content marketing", "email marketing", "social media marketing", "copywriting",
+        "salesforce", "hubspot", "tableau", "power bi", "looker", "excel", "word", "powerpoint",
+        "problem solving", "critical thinking", "teamwork", "collaboration", "time management",
+        "adaptability", "creativity", "emotional intelligence", "conflict resolution", "decision making",
+        "public speaking", "presentation skills", "negotiation", "customer service", "data engineering",
+        "computer vision", "natural language processing", "reinforcement learning", "big data", "hadoop",
+        "spark", "hive", "pig", "zookeeper", "flume", "sqoop", "oozie", "mahout", "storm", "flink",
+        "blockchain", "smart contracts", "solidity", "ethereum", "web3", "cybersecurity", "penetration testing",
+        "ethical hacking", "cryptography", "network security", "cloud security", "devsecops", "ci/cd",
+        "microservices", "serverless", "restful architecture", "soap", "grpc", "websockets", "oauth",
+        "jwt", "saml", "openid", "sso", "active directory", "ldap", "tcp/ip", "dns", "http", "https",
+        "ftp", "ssh", "ssl/tls", "vpn", "firewalls", "routers", "switches", "load balancing"
     ]
     
     text_lower = text.lower()
     for skill in skill_keywords:
-        if re.search(r'\b' + re.escape(skill) + r'\b', text_lower):
+        pattern = r'(?<!\w)' + re.escape(skill) + r'(?!\w)'
+        if re.search(pattern, text_lower):
             entities['skills'].append(skill.title())
             
     for ent in doc.ents:
