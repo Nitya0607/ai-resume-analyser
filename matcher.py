@@ -15,16 +15,25 @@ def calculate_match_score(resume_text, job_description):
     vectorizer = TfidfVectorizer(stop_words='english')
     vectors = vectorizer.fit_transform([resume_text, job_description])
     semantic_similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
-    semantic_score = semantic_similarity * 100
+    
+    semantic_score = min(100.0, (semantic_similarity / 0.3) * 100)
     
     if not jd_skills:
         score = round(semantic_score, 2)
         return score, [], ["No specific technical skills identified. Score based purely on semantic text matching."]
         
     matched_skills = jd_skills.intersection(resume_skills)
-    exact_score = (len(matched_skills) / len(jd_skills)) * 100
     
-    final_score = round((exact_score * 0.70) + (semantic_score * 0.30), 2)
+    required_threshold = max(1, len(jd_skills) * 0.8)
+    exact_score = min(100.0, (len(matched_skills) / required_threshold) * 100)
+    
+    bonus = 0
+    if resume_entities.get('experience'):
+        bonus += 5
+    if resume_entities.get('education'):
+        bonus += 5
+        
+    final_score = round(min(100.0, (exact_score * 0.60) + (semantic_score * 0.40) + bonus), 2)
     
     missing_skills = list(jd_skills - resume_skills)
     
